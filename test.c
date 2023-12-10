@@ -7,8 +7,8 @@
 typedef struct Record{
     char surname[30];       // Student Surname
     char sex;               // M - Male or F = Female
-    char year[5];               // Year part of the student number
-    char studentNumber[11];      // Last (5) digits of the student number
+    int year;               // Year part of the student number
+    int studentNumber;      // Last (5) digits of the student number
     char department[50];    // Department of the student
 } Record;
 
@@ -19,7 +19,7 @@ Record *createRecord(int num);
 void addRecords(int num, Record students[]);
 void displayRecords(int num, Record *recordList);
 void displayFilteredRecords(int num, Record *recordList, int filterOption);
-void findStudentByNum(int num, Record *recordList, char *snum);
+void findStudentByNum(int num, Record *recordList, int snum);
 
 // Main Function
 int main(){
@@ -111,19 +111,19 @@ void addRecords(int num, Record students[]){
         scanf(" %c", &students[count].sex);
 
         printf("Year Enrolled: ");
-        scanf(" %[^\n]", students[count].year);
+        scanf(" %d", &students[count].year);
 
         printf("Student Number: ");
-        scanf(" %[^\n]", students[count].studentNumber);
-
+        scanf(" %d", &students[count].studentNumber);
+        
         // Concatenate the year into the student number to make it whole as one
             // Concatenate the 'year' and 'studentNumber' fields of a student record into a single string
-            char temp[11];
-            snprintf(temp, sizeof(temp), "%s-%s", students[count].year, students[count].studentNumber);
+            int temp;
+            snprintf(temp, sizeof(temp), "%d-%d", students[count].year, students[count].studentNumber);
     
             // Store the concatenated string back in the 'studentNumber' field
-            strncpy(students[count].studentNumber, temp, sizeof(students[count].studentNumber) - 1);
-            students[count].studentNumber[sizeof(students[count].studentNumber) - 1] = '\0';
+            
+
 
         printf("Department: ");
         scanf("  %[^\n]", students[count].department);
@@ -139,7 +139,7 @@ void displayRecords(int num, Record *recordList){
 	printf("=============================================================\n\n");
     printf("\nNo\t | Surname\t\t | Sex\t\t | Year\t\t | Student Number\t | Department\n");
     while(i < num){
-        printf("\n%-2d\t | %-14s\t | %-13c | %-13s | %-10s\t\t | %-8s\t\n", i+1, recordList[i].surname, recordList[i].sex, recordList[i].year, recordList[i].studentNumber, recordList[i].department);
+        printf("\n%-2d\t | %-14s\t | %-13c | %-13d | %-10d\t\t | %-8s\t\n", i+1, recordList[i].surname, recordList[i].sex, recordList[i].year, recordList[i].studentNumber, recordList[i].department);
         i++;
     }
 }
@@ -155,7 +155,7 @@ void displayFilteredRecords(int num, Record *recordList, int filterOption) {
         switch (filterOption) {
             case 1: // Sex
                 if (recordList[i].sex == 'M' || recordList[i].sex == 'F' || recordList[i].sex == 'm' || recordList[i].sex == 'f') {
-                    printf("%-2d\t | %-14s\t | %-13c | %-13s | %-14s\t | %-8s\t\n",
+                    printf("%-2d\t | %-14s\t | %-13c | %-13d | %-14d\t | %-8s\t\n",
                            i + 1, recordList[i].surname, recordList[i].sex,
                            recordList[i].year, recordList[i].studentNumber,
                            recordList[i].department);
@@ -165,7 +165,7 @@ void displayFilteredRecords(int num, Record *recordList, int filterOption) {
             case 2: // Year
                 // Assuming 'year' is a string, modify as needed if it's an integer
                 if (strlen(recordList[i].year) > 0) {
-                    printf("%-2d\t | %-14s\t | %-13c | %-13s | %-14s\t | %-8s\t\n",
+                    printf("%-2d\t | %-14s\t | %-13c | %-13d | %-14d\t | %-8s\t\n",
                            i + 1, recordList[i].surname, recordList[i].sex,
                            recordList[i].year, recordList[i].studentNumber,
                            recordList[i].department);
@@ -174,7 +174,7 @@ void displayFilteredRecords(int num, Record *recordList, int filterOption) {
 
             case 3: // Department
                 if (strlen(recordList[i].department) > 0) {
-                    printf("%-2d\t | %-14s\t | %-13c | %-13s | %-14s\t | %-8s\t\n",
+                    printf("%-2d\t | %-14s\t | %-13c | %-13d | %-14d\t | %-8s\t\n",
                            i + 1, recordList[i].surname, recordList[i].sex,
                            recordList[i].year, recordList[i].studentNumber,
                            recordList[i].department);
@@ -187,16 +187,20 @@ void displayFilteredRecords(int num, Record *recordList, int filterOption) {
     }
 }
 
-void findStudentByNum(int num, Record *recordList, char *snum) {
+void findStudentByNum(int num, Record *recordList, int snum) {
     printf("\n=============================================================\n");
-    printf("Displaying Student Record(s) for Student Number: %s\n", snum);
+    printf("Displaying Student Record(s) for Student Number: %d\n", snum);
     printf("=============================================================\n\n");
     printf("No\t | Surname\t | Sex\t | Year\t | Student Number\t | Department\n");
 
     for (int i = 0; i < num; i++) {
+        // Convert the last five digits of the student number to a string
+        char lastFiveDigits[6];
+        sprintf(lastFiveDigits, "%05d", recordList[i].studentNumber);
+
         // Check if the last five digits of the student number match
-        if (strcmp(snum, recordList[i].studentNumber + strlen(recordList[i].studentNumber) - 5) == 0) {
-            printf("%-2d\t | %-14s\t | %-13c | %-13s | %-14s\t | %-8s\t\n",
+        if (strcmp(lastFiveDigits, lastFiveDigits) == 0) {
+            printf("%-2d\t | %-14s\t | %-13c | %-13d | %-14d\t | %-8s\t\n",
                    i + 1, recordList[i].surname, recordList[i].sex,
                    recordList[i].year, recordList[i].studentNumber,
                    recordList[i].department);
